@@ -4,19 +4,22 @@ import com.alibaba.fastjson.JSON;
 import com.sxy.community.DTO.GithubUser;
 import com.sxy.community.DTO.Token_dto;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @Component
 public class Gtprovider {
+    @Value("${git.accurl}")
+    private String accurl;
     public String callback(Token_dto token_dto){
         MediaType media= MediaType.get("application/json; charset=utf-8");
         OkHttpClient client = new OkHttpClient();
 
             RequestBody body = RequestBody.create(media,JSON.toJSONString(token_dto));
             Request request = new Request.Builder()
-                    .url("https://github.com/login/oauth/access_token")
+                    .url(accurl)
                     .post(body)
                     .build();
             try {
