@@ -57,6 +57,7 @@ public class CallbackController {
             user.setName(usercallback.getName());
             user.setAccountId(String.valueOf(usercallback.getId()));
             user.setId(usercallback.getId());
+            user.setAvatarUrl(usercallback.getAvatarUrl());
             usermapper.insertUser(user);
             Cookie cookie=new Cookie("token",token);
             httpServletResponse.addCookie(cookie);

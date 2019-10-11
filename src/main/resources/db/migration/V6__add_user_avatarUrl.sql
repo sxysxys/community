@@ -1,0 +1,1 @@
+ALTER TABLE user ADD avatarUrl VARCHAR(100) NULL;
