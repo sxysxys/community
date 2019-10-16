@@ -1,0 +1,1 @@
+ALTER TABLE question CHANGE tags tag VARCHAR(256);

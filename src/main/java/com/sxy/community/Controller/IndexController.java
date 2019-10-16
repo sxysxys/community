@@ -21,9 +21,6 @@ public class IndexController {
                         @RequestParam(name = "page",defaultValue = "1") Integer page,
                         @RequestParam(name = "size",defaultValue = "2") Integer size){
         pageDto pagination=questionService.getall(page,size);
-/*        for (QuestionDto questionDto : questionDtos) {
-            questionDto.setDescribe("fffff");
-        }*/
         model.addAttribute("pagination",pagination);
         return "index";
     }

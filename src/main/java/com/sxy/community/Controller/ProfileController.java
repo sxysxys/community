@@ -33,7 +33,7 @@ public class ProfileController {
             model.addAttribute("section","replies");
             model.addAttribute("sectionName","最新回复");
         }
-        pageDto pagination = questionService.list(user.getId(), page, size);
+      pageDto pagination = questionService.list(user.getId(), page, size);
         model.addAttribute("pagination",pagination);
         return "profile";
     }

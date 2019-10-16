@@ -4,7 +4,7 @@ package com.sxy.community.Controller;
 import com.sxy.community.DAO.User;
 import com.sxy.community.DTO.GithubUser;
 import com.sxy.community.DTO.Token_dto;
-import com.sxy.community.mapper.Usermapper;
+import com.sxy.community.Service.UserService;
 import com.sxy.community.provider.Gtprovider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +25,7 @@ public class CallbackController {
     private Gtprovider gtprovider;
 
     @Autowired
-    private Usermapper usermapper;
+    private UserService userService;
 
     @Value("${git.client_id}")
     private String client_id;
@@ -56,9 +56,9 @@ public class CallbackController {
             user.setToken(token);
             user.setName(usercallback.getName());
             user.setAccountId(String.valueOf(usercallback.getId()));
-            user.setId(usercallback.getId());
-            user.setAvatarUrl(usercallback.getAvatarUrl());
-            usermapper.insertUser(user);
+//            user.setId(usercallback.getId());
+            user.setAvatarurl(usercallback.getAvatarUrl());
+            userService.createOrUpdate(user);
             Cookie cookie=new Cookie("token",token);
             httpServletResponse.addCookie(cookie);
             //httpSession.getSession().setAttribute("user",usercallback);
@@ -66,5 +66,14 @@ public class CallbackController {
         }else{
             return "redirect:/";
         }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request,HttpServletResponse response){
+        request.getSession().removeAttribute("user");
+        Cookie cookie = new Cookie("token",null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return "redirect:/";
     }
 }

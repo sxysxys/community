@@ -7,9 +7,9 @@ import lombok.Data;
 
 @Data
 public class QuestionDto {
-    private Integer id;
+    private Long id;
     private String title;
-    private String describe;
+    private String description;
     private String tag;
     private Long gmtcreat;
     private Long gmtmodified;

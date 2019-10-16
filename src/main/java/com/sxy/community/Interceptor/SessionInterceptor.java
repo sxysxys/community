@@ -1,7 +1,8 @@
 package com.sxy.community.Interceptor;
 
 import com.sxy.community.DAO.User;
-import com.sxy.community.mapper.Usermapper;
+import com.sxy.community.DAO.UserExample;
+import com.sxy.community.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -11,11 +12,12 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @Service
 public class SessionInterceptor implements HandlerInterceptor {
     @Autowired
-    Usermapper usermapper;
+    UserMapper usermapper;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Cookie[] cookies = request.getCookies();
@@ -23,10 +25,11 @@ public class SessionInterceptor implements HandlerInterceptor {
             for (Cookie cookie : cookies) {
                 if(cookie.getName().equals("token")){
                     String token = cookie.getValue();
-                    User user=usermapper.findbytoken(token);
-                    if(user!=null){
-                        System.out.println(user);
-                        request.getSession().setAttribute("user",user);
+                    UserExample userExample=new UserExample();
+                    userExample.createCriteria().andTokenEqualTo(token);
+                    List<User> user=usermapper.selectByExample(userExample);
+                    if(user.size()!=0){
+                        request.getSession().setAttribute("user",user.get(0));
                     }
                     break;
                 }
