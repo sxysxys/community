@@ -5,6 +5,8 @@ import com.sxy.community.DAO.QuestionExample;
 import com.sxy.community.DAO.User;
 import com.sxy.community.DTO.QuestionDto;
 import com.sxy.community.DTO.pageDto;
+import com.sxy.community.exception.CustomizeError;
+import com.sxy.community.exception.CustomizeErrorCode;
 import com.sxy.community.mapper.QuestionMapper;
 import com.sxy.community.mapper.UserMapper;
 import org.apache.ibatis.session.RowBounds;
@@ -79,6 +81,9 @@ public class QuestionService {
 
     public QuestionDto getById(Long id) {
         Question byId = questionmapper.selectByPrimaryKey(id);
+        if(byId==null){
+            throw new CustomizeError(CustomizeErrorCode.QUESTION_NOT_FOUND);
+        }
         QuestionDto questionDto = new QuestionDto();
         BeanUtils.copyProperties(byId,questionDto);
         User user = usermapper.selectByPrimaryKey(byId.getCreater());
