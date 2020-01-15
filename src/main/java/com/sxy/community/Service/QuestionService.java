@@ -5,8 +5,9 @@ import com.sxy.community.DAO.QuestionExample;
 import com.sxy.community.DAO.User;
 import com.sxy.community.DTO.QuestionDto;
 import com.sxy.community.DTO.pageDto;
-import com.sxy.community.exception.CustomizeError;
+import com.sxy.community.exception.CustomizeException;
 import com.sxy.community.exception.CustomizeErrorCode;
+import com.sxy.community.mapper.QuestionExtMapper;
 import com.sxy.community.mapper.QuestionMapper;
 import com.sxy.community.mapper.UserMapper;
 import org.apache.ibatis.session.RowBounds;
@@ -24,6 +25,9 @@ public class QuestionService {
 
     @Autowired
     private UserMapper usermapper;
+
+    @Autowired
+    QuestionExtMapper questionExtMapper;
 
     public pageDto getall(Integer page, Integer size) {
         pageDto pageDto = new pageDto();
@@ -82,7 +86,7 @@ public class QuestionService {
     public QuestionDto getById(Long id) {
         Question byId = questionmapper.selectByPrimaryKey(id);
         if(byId==null){
-            throw new CustomizeError(CustomizeErrorCode.QUESTION_NOT_FOUND);
+            throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
         }
         QuestionDto questionDto = new QuestionDto();
         BeanUtils.copyProperties(byId,questionDto);
@@ -109,4 +113,21 @@ public class QuestionService {
             questionmapper.updateByExampleSelective(record, example);
         }
     }
+//每次插入的时候+1个阅读量
+    public void incView(Long id) {
+        Question question = new Question();
+        question.setId(id);
+        question.setViewCount(1);
+        questionExtMapper.incView(question);
+    }
+
+
+/*    public void addcount(Long id) {
+        Question question = questionmapper.selectByPrimaryKey(id);
+        if(question.getViewCount()==null){
+            question.setViewCount(0);
+        }
+        question.setViewCount(question.getViewCount()+1);
+        questionmapper.updateByPrimaryKey(question);
+    }*/
 }

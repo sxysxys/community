@@ -28,3 +28,11 @@ body{
 .jumbotron{
     margin: 50px;
 }
+.comment{
+    margin: 10px;
+    height: auto;
+}
+.response{
+    float: right;
+    margin-bottom: 15px;
+}
