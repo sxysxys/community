@@ -71,10 +71,28 @@ function collapseComment(e) {
         e.removeAttribute("data-collapse");
         e.classList.remove("active");
     }else{
-        //展开二级评论
-        commentId.addClass("in");
-        //标记二级评论状态
-        e.setAttribute("data-collapse","in");
-        e.classList.add("active");
+        if (commentId.children().length!=1){
+            //展开二级评论
+            commentId.addClass("in");
+            //标记二级评论状态
+            e.setAttribute("data-collapse","in");
+            e.classList.add("active");
+        }else {
+            $.getJSON( "/comment/"+id, function( data ) {
+                $.each( data.data.reverse(), function(index,comment) {
+                    console.log(comment);
+                    var c= $("<div/>",{
+                        "class":"col-lg-12 col-md-12 col-sm-12 col-xs-12 comments",
+                        html:comment.content
+                    });
+                    commentId.prepend(c);
+                });
+                //展开二级评论
+                commentId.addClass("in");
+                //标记二级评论状态
+                e.setAttribute("data-collapse","in");
+                e.classList.add("active");
+            });
+        }
     }
 }
