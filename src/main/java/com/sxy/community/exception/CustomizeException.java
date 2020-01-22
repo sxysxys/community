@@ -1,10 +1,10 @@
 package com.sxy.community.exception;
 
-public class CustomizeError extends RuntimeException{
+public class CustomizeException extends RuntimeException{
     private String message;
-    Integer code;
+    private Integer code;
 
-    public CustomizeError(ICustomErrorCode customizeErrorCode) {
+    public CustomizeException(ICustomErrorCode customizeErrorCode) {
         this.message=customizeErrorCode.getMessage();
         this.code=customizeErrorCode.getCode();
     }

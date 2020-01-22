@@ -5,8 +5,9 @@ import com.sxy.community.DAO.QuestionExample;
 import com.sxy.community.DAO.User;
 import com.sxy.community.DTO.QuestionDto;
 import com.sxy.community.DTO.pageDto;
-import com.sxy.community.exception.CustomizeError;
+import com.sxy.community.exception.CustomizeException;
 import com.sxy.community.exception.CustomizeErrorCode;
+import com.sxy.community.mapper.QuestionExtMapper;
 import com.sxy.community.mapper.QuestionMapper;
 import com.sxy.community.mapper.UserMapper;
 import org.apache.ibatis.session.RowBounds;
@@ -25,6 +26,9 @@ public class QuestionService {
     @Autowired
     private UserMapper usermapper;
 
+    @Autowired
+    QuestionExtMapper questionExtMapper;
+
     public pageDto getall(Integer page, Integer size) {
         pageDto pageDto = new pageDto();
         Integer allcount = (int)questionmapper.countByExample(new QuestionExample());
@@ -36,8 +40,6 @@ public class QuestionService {
             page=1;
         }
         Integer offset=size*(page-1);
-//                    Integer a=1;
-//        Question question1 = questionmapper.selectByPrimaryKey(a.longValue());
         List<Question> questions = questionmapper.selectByExampleWithRowbounds(new QuestionExample(), new RowBounds(offset, size));
         List<QuestionDto> questionDtoList=new ArrayList<>();
         for (Question question : questions) {
@@ -54,7 +56,7 @@ public class QuestionService {
     public pageDto list(Long id, Integer page, Integer size) {
         pageDto pageDto = new pageDto();
         QuestionExample example = new QuestionExample();
-        example.createCriteria().andCreaterEqualTo(id);
+        example.createCriteria().andIdEqualTo(id);
         Integer allcount = (int)questionmapper.countByExample(example);
         pageDto.setPagination(allcount,page,size);
         if(page>pageDto.getAllpages()){
@@ -84,7 +86,7 @@ public class QuestionService {
     public QuestionDto getById(Long id) {
         Question byId = questionmapper.selectByPrimaryKey(id);
         if(byId==null){
-            throw new CustomizeError(CustomizeErrorCode.QUESTION_NOT_FOUND);
+            throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
         }
         QuestionDto questionDto = new QuestionDto();
         BeanUtils.copyProperties(byId,questionDto);
@@ -96,8 +98,6 @@ public class QuestionService {
     public void CreatOrUpdate(Question que) {
         if(que.getId()==null){
             //创建
-/*            Integer a=1;
-            que.setId(a.longValue());*/
             que.setGmtcreat(System.currentTimeMillis());
             que.setGmtmodified(que.getGmtcreat());
             questionmapper.insert(que);
@@ -113,13 +113,21 @@ public class QuestionService {
             questionmapper.updateByExampleSelective(record, example);
         }
     }
+//每次插入的时候+1个阅读量
+    public void incView(Long id) {
+        Question question = new Question();
+        question.setId(id);
+        question.setViewCount(1);
+        questionExtMapper.incView(question);
+    }
 
-    public void updateViewcount(Long id) {
+
+/*    public void addcount(Long id) {
         Question question = questionmapper.selectByPrimaryKey(id);
         if(question.getViewCount()==null){
             question.setViewCount(0);
         }
         question.setViewCount(question.getViewCount()+1);
         questionmapper.updateByPrimaryKey(question);
-    }
+    }*/
 }

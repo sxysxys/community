@@ -28,3 +28,38 @@ body{
 .jumbotron{
     margin: 50px;
 }
+.comment{
+    margin: 10px;
+    height: auto;
+}
+.response{
+    float: right;
+    margin-bottom: 15px;
+}
+.menu{
+    margin-top: 5px;
+    color: #999;
+}
+.menu .active {
+    color: #499ef3;
+}
+.menu .icon:hover{
+    color: #499ef3;
+}
+.questions{
+    margin-bottom: 15px;
+    border-bottom: 1px solid #999999;
+}
+.sub-comments{
+    margin-top: 15px;
+    border: 1px solid #eee;
+     margin-bottom: 10px;
+    padding-top: 10px;
+    border-radius: 8px;
+}
+.my_comment{
+    margin-bottom: 10px;
+}
+.sub-comments .btn{
+    margin-bottom: 10px;
+}

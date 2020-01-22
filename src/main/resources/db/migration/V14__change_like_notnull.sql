@@ -1,0 +1,1 @@
+ALTER TABLE comment MODIFY like_count BIGINT(20) DEFAULT '0';
