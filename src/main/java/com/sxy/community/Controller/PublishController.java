@@ -26,14 +26,14 @@ public class PublishController {
     }
     @PostMapping("/publish")
     public String dopublish(@RequestParam(name = "title",required = false) String title,
-                            @RequestParam(name = "describe",required = false) String describe,
+                            @RequestParam(name = "description",required = false) String description,
                             @RequestParam(name = "tag",required = false) String tag,
                             @RequestParam(name = "id",required = false) Long id,
                             HttpServletRequest httpServletRequest,
                             Model model
                             ){
         model.addAttribute("title",title);
-        model.addAttribute("describe",describe);
+        model.addAttribute("description",description);
         model.addAttribute("tag",tag);
 //        Cookie[] cookies = httpServletRequest.getCookies();
         User user = (User)httpServletRequest.getSession().getAttribute("user");
@@ -45,7 +45,7 @@ public class PublishController {
             model.addAttribute("error","标题不能为空！");
             return "publish";
         }
-        if(describe==null || describe==""){
+        if(description==null || description==""){
             model.addAttribute("error","描述不能为空！");
             return "publish";
         }
@@ -55,7 +55,7 @@ public class PublishController {
         }
         Question que = new Question();
         que.setTitle(title);
-        que.setDescription(describe);
+        que.setDescription(description);
         que.setTag(tag);
         que.setCreater(user.getId());
         que.setId(id);

@@ -36,6 +36,8 @@ public class QuestionService {
             page=1;
         }
         Integer offset=size*(page-1);
+//                    Integer a=1;
+//        Question question1 = questionmapper.selectByPrimaryKey(a.longValue());
         List<Question> questions = questionmapper.selectByExampleWithRowbounds(new QuestionExample(), new RowBounds(offset, size));
         List<QuestionDto> questionDtoList=new ArrayList<>();
         for (Question question : questions) {
@@ -52,7 +54,7 @@ public class QuestionService {
     public pageDto list(Long id, Integer page, Integer size) {
         pageDto pageDto = new pageDto();
         QuestionExample example = new QuestionExample();
-        example.createCriteria().andIdEqualTo(id);
+        example.createCriteria().andCreaterEqualTo(id);
         Integer allcount = (int)questionmapper.countByExample(example);
         pageDto.setPagination(allcount,page,size);
         if(page>pageDto.getAllpages()){
@@ -94,6 +96,8 @@ public class QuestionService {
     public void CreatOrUpdate(Question que) {
         if(que.getId()==null){
             //创建
+/*            Integer a=1;
+            que.setId(a.longValue());*/
             que.setGmtcreat(System.currentTimeMillis());
             que.setGmtmodified(que.getGmtcreat());
             questionmapper.insert(que);
@@ -108,5 +112,14 @@ public class QuestionService {
             example.createCriteria().andIdEqualTo(que.getId());
             questionmapper.updateByExampleSelective(record, example);
         }
+    }
+
+    public void updateViewcount(Long id) {
+        Question question = questionmapper.selectByPrimaryKey(id);
+        if(question.getViewCount()==null){
+            question.setViewCount(0);
+        }
+        question.setViewCount(question.getViewCount()+1);
+        questionmapper.updateByPrimaryKey(question);
     }
 }

@@ -59,6 +59,7 @@ public class CallbackController {
 //            user.setId(usercallback.getId());
             user.setAvatarurl(usercallback.getAvatarUrl());
             userService.createOrUpdate(user);
+            System.out.println("123");
             Cookie cookie=new Cookie("token",token);
             httpServletResponse.addCookie(cookie);
             //httpSession.getSession().setAttribute("user",usercallback);

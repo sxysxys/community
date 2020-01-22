@@ -1,0 +1,1 @@
+ALTER TABLE question MODIFY description VARCHAR(250);

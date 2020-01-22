@@ -18,6 +18,8 @@ public class UserService {
         List<User> user1=usermapper.selectByExample(example);
         if(user1.size()==0){
             //插入
+//            Integer a=1;
+//            user.setId(a.longValue());
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
             usermapper.insert(user);
