@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionService {
@@ -40,7 +42,9 @@ public class QuestionService {
             page=1;
         }
         Integer offset=size*(page-1);
-        List<Question> questions = questionmapper.selectByExampleWithRowbounds(new QuestionExample(), new RowBounds(offset, size));
+        QuestionExample example = new QuestionExample();
+        example.setOrderByClause("gmtcreat desc");
+        List<Question> questions = questionmapper.selectByExampleWithRowbounds(example, new RowBounds(offset, size));
         List<QuestionDto> questionDtoList=new ArrayList<>();
         for (Question question : questions) {
             User user=usermapper.selectByPrimaryKey(question.getCreater());
@@ -100,7 +104,7 @@ public class QuestionService {
             //创建
             que.setGmtcreat(System.currentTimeMillis());
             que.setGmtmodified(que.getGmtcreat());
-            questionmapper.insert(que);
+            questionmapper.insertSelective(que);
         }else{
             //更新
             Question record = new Question();
@@ -113,21 +117,28 @@ public class QuestionService {
             questionmapper.updateByExampleSelective(record, example);
         }
     }
-//每次插入的时候+1个阅读量
+
+    //每次插入的时候+1个阅读量
     public void incView(Long id) {
         Question question = new Question();
         question.setId(id);
         question.setViewCount(1);
         questionExtMapper.incView(question);
     }
-
-
-/*    public void addcount(Long id) {
-        Question question = questionmapper.selectByPrimaryKey(id);
-        if(question.getViewCount()==null){
-            question.setViewCount(0);
-        }
-        question.setViewCount(question.getViewCount()+1);
-        questionmapper.updateByPrimaryKey(question);
-    }*/
+//取出相关的问题
+    public List<QuestionDto> getRelated(QuestionDto queryDto) {
+        String[] split = queryDto.getTag().split(",");
+        //拼接成正则的形式
+        String regexpTag = Arrays.stream(split).collect(Collectors.joining("|"));
+        Question question = new Question();
+        question.setId(queryDto.getId());
+        question.setTag(regexpTag);
+        List<Question> questions = questionExtMapper.selectRelated(question);
+        List<QuestionDto> collect = questions.stream().map(q -> {
+            QuestionDto questionDto = new QuestionDto();
+            BeanUtils.copyProperties(q, questionDto);
+            return questionDto;
+        }).collect(Collectors.toList());
+        return collect;
+    }
 }

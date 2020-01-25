@@ -1,1 +1,0 @@
-ALTER TABLE question MODIFY description TEXT;
