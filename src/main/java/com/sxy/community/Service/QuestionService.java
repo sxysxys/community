@@ -60,7 +60,7 @@ public class QuestionService {
     public pageDto list(Long id, Integer page, Integer size) {
         pageDto pageDto = new pageDto();
         QuestionExample example = new QuestionExample();
-        example.createCriteria().andIdEqualTo(id);
+        example.createCriteria().andCreaterEqualTo(id);
         Integer allcount = (int)questionmapper.countByExample(example);
         pageDto.setPagination(allcount,page,size);
         if(page>pageDto.getAllpages()){
@@ -73,6 +73,7 @@ public class QuestionService {
 //        List<Question> questions = questionmapper.getallById(id,offset,size);
         QuestionExample example1 = new QuestionExample();
         example1.createCriteria().andCreaterEqualTo(id);
+        example1.setOrderByClause("gmtcreat desc");
         List<Question> questions = questionmapper.selectByExampleWithRowbounds(example1, new RowBounds(offset, size));
         List<QuestionDto> questionDtoList=new ArrayList<>();
         for (Question question : questions) {

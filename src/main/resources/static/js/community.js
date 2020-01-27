@@ -127,3 +127,21 @@ function collapseComment(e) {
         }
     }
 }
+function showSelectTag() {
+    $("#selected-tag").show();
+}
+/**
+ * 标签的点击事件。
+ * @param c
+ */
+function selectTag(c) {
+    var data = c.getAttribute("data-tag");
+    var input = $("#tag").val();  //先拿到相应的值
+    if (input.indexOf(data) == -1) {  //如果存在就不添加了
+        if (input) {
+            $("#tag").val(input + ',' + data);
+        } else {
+            $("#tag").val(data);
+        }
+    }
+}
