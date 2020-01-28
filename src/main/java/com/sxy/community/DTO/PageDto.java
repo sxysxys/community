@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class pageDto {
-    private List<QuestionDto> questions;
+public class PageDto<T> {
+    private List<T> data;
     private boolean hasPrevious;
     private boolean hasFirstPage;
     private boolean hasNext;
