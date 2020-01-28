@@ -4,7 +4,7 @@ import com.sxy.community.DAO.Question;
 import com.sxy.community.DAO.QuestionExample;
 import com.sxy.community.DAO.User;
 import com.sxy.community.DTO.QuestionDto;
-import com.sxy.community.DTO.pageDto;
+import com.sxy.community.DTO.PageDto;
 import com.sxy.community.exception.CustomizeException;
 import com.sxy.community.exception.CustomizeErrorCode;
 import com.sxy.community.mapper.QuestionExtMapper;
@@ -31,8 +31,8 @@ public class QuestionService {
     @Autowired
     QuestionExtMapper questionExtMapper;
 
-    public pageDto getall(Integer page, Integer size) {
-        pageDto pageDto = new pageDto();
+    public PageDto getall(Integer page, Integer size) {
+        PageDto<QuestionDto> pageDto = new PageDto<>();
         Integer allcount = (int)questionmapper.countByExample(new QuestionExample());
         pageDto.setPagination(allcount,page,size);
         if(page>pageDto.getAllpages()){
@@ -53,12 +53,12 @@ public class QuestionService {
             BeanUtils.copyProperties(question,questionDto);
             questionDtoList.add(questionDto);
         }
-        pageDto.setQuestions(questionDtoList);
+        pageDto.setData(questionDtoList);
         return pageDto;
     }
 
-    public pageDto list(Long id, Integer page, Integer size) {
-        pageDto pageDto = new pageDto();
+    public PageDto list(Long id, Integer page, Integer size) {
+        PageDto<QuestionDto> pageDto = new PageDto<>();
         QuestionExample example = new QuestionExample();
         example.createCriteria().andCreaterEqualTo(id);
         Integer allcount = (int)questionmapper.countByExample(example);
@@ -83,7 +83,7 @@ public class QuestionService {
             BeanUtils.copyProperties(question,questionDto);
             questionDtoList.add(questionDto);
         }
-        pageDto.setQuestions(questionDtoList);
+        pageDto.setData(questionDtoList);
 
         return pageDto;
     }

@@ -3,12 +3,11 @@ package com.sxy.community.Service;
 import com.sxy.community.DAO.*;
 import com.sxy.community.DTO.CommentDto;
 import com.sxy.community.enums.CommentTypeEnum;
+import com.sxy.community.enums.NotificationEnum;
+import com.sxy.community.enums.NotificationStatusEnum;
 import com.sxy.community.exception.CustomizeErrorCode;
 import com.sxy.community.exception.CustomizeException;
-import com.sxy.community.mapper.CommentMapper;
-import com.sxy.community.mapper.QuestionExtMapper;
-import com.sxy.community.mapper.QuestionMapper;
-import com.sxy.community.mapper.UserMapper;
+import com.sxy.community.mapper.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +26,8 @@ public class CommentService {
     QuestionExtMapper questionExtMapper;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    NotificationMapper notificationMapper;
 
     /**
      * 插进来的是json数据
@@ -35,7 +36,7 @@ public class CommentService {
      * @param comment
      */
     @Transactional
-    public void insert(Comment comment) {
+    public void insert(Comment comment,User user) {
         if (comment.getParentId() == null || comment.getParentId() == 0) {
             throw new CustomizeException(CustomizeErrorCode.TARGET_NOT_FOUND);
         }
@@ -46,11 +47,18 @@ public class CommentService {
             throw new CustomizeException(CustomizeErrorCode.NO_PEOPLE_EXIST);
         }
         if (comment.getType() == CommentTypeEnum.COMMENT.getType()) {  //如果是给评论进行评论
-            Comment comment1 = commentMapper.selectByPrimaryKey(comment.getParentId());
+            Comment comment1 = commentMapper.selectByPrimaryKey(comment.getParentId());  //第一级的评论
             if (comment1 == null) {
                 throw new CustomizeException(CustomizeErrorCode.PARENT_NOT_EXIST);
             }
+            //先查出问题
+            Question question = questionMapper.selectByPrimaryKey(comment1.getParentId());
+            if (question == null) {
+                throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+            }
             commentMapper.insert(comment);
+            //增加通知
+            createNotify(comment, comment1.getCommentator(), user.getName(), question.getTitle(), NotificationEnum.REPLY_COMMENT.getType());
         } else {  //如果是给问题进行评论
             Question question = questionMapper.selectByPrimaryKey(comment.getParentId());
             if (question == null) {
@@ -59,7 +67,28 @@ public class CommentService {
             commentMapper.insert(comment);
             question.setCommentCount(1);
             questionExtMapper.incCommentCount(question);
+            createNotify(comment,question.getCreater(), user.getName(),question.getTitle(),NotificationEnum.REPLY_QUESTION.getType());
         }
+    }
+
+    /**
+     * 创建相应的通知
+     * @param comment
+     * @param receiver
+     * @param outerTitle
+     * @param type
+     */
+    private void createNotify(Comment comment, long receiver, String notifierName, String outerTitle, int type) {
+        Notification notification = new Notification();
+        notification.setGmtCreate(System.currentTimeMillis());
+        notification.setType(type);
+        notification.setOutId(comment.getParentId());  //设置当前问题的id
+        notification.setNotifier(comment.getCommentator());
+        notification.setStates(NotificationStatusEnum.NO_READ.getStatus());
+        notification.setReceiver(receiver);
+        notification.setNotifierName(notifierName);
+        notification.setOuterTitle(outerTitle);
+        notificationMapper.insert(notification);
     }
 
     /**

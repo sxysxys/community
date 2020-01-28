@@ -33,7 +33,7 @@ public class CommentController {
         if (StringUtils.isEmpty(comment.getContent())){
             return ResultDto.errorOf(CustomizeErrorCode.NO_CONTENT);
         }
-        commentService.insert(comment);
+        commentService.insert(comment,user);
         return ResultDto.success(CustomizeErrorCode.SUCCESS_RETURN);
     }
 

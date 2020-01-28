@@ -2,6 +2,8 @@ package com.sxy.community.Interceptor;
 
 import com.sxy.community.DAO.User;
 import com.sxy.community.DAO.UserExample;
+import com.sxy.community.Service.NotificationService;
+import com.sxy.community.mapper.NotificationMapper;
 import com.sxy.community.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
@@ -18,6 +20,8 @@ import java.util.List;
 public class SessionInterceptor implements HandlerInterceptor {
     @Autowired
     UserMapper usermapper;
+    @Autowired
+    NotificationService notificationService;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Cookie[] cookies = request.getCookies();
@@ -30,6 +34,8 @@ public class SessionInterceptor implements HandlerInterceptor {
                     List<User> user=usermapper.selectByExample(userExample);
                     if(user.size()!=0){
                         request.getSession().setAttribute("user",user.get(0));
+                        Long unreadCount = notificationService.unreadCount(user.get(0).getId());
+                        request.getSession().setAttribute("unreadCount",unreadCount);
                     }
                     break;
                 }
