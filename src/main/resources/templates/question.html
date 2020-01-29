@@ -109,12 +109,12 @@
                         <div class="media-left">
                             <a href="#">
                                 <img class="media-object img-rounded"
-                                     th:src="${question.user.avatarurl}">
+                                     th:src="${session.user!=null?session.user.avatarurl:'/images/default-avatar'}">
                             </a>
                         </div>
                         <div class="media-body" style="padding-top: 10px">
                             <h5 class="media-heading">
-                                <span th:text="${question.user.name}"></span>
+                                <span th:text="${session.user!=null?session.user.name:'匿名'}"></span>
                             </h5>
                         </div>
                     </div>
